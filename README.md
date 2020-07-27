@@ -39,6 +39,7 @@ ssl_ca_cert_path=<PATH_TO_CA_CERT>
 data_file=<ABSOLUTE_PATH_FOR_OUTPUT_FILE>
 full_document=<default_OR_updateLookup>
 event_pipeline=<AGGREGATION_PIPELINE_QUERY_FOR_FILTER>
+max_file_size=<1048576>
 
 [general]
 debug=<BOOLEAN_VALUE>
@@ -66,6 +67,8 @@ NOTE that URL encoded special characters require double `%`, e.g `@` would be `%
 An example that is similar to this script can be found in the section below.
 
 Both sections are mandatory, as well as the `connection_string` option, but the `timeout` and `debug` are option (having defaults of 10 seconds and `false` respectivetly). The optional `event_pipeline` is a change stream pipeline to filter events. SSL/TLS settings for both databases are optional, but if `ssl_enabled` is `True` then `ssl_pem_path` and `ssl_ca_cert_path` must exist. SSL/TLS default is `False`. The `full_document` can only be `default` or `updateLookup` (see MongoDB documentaiton for this.), `default` is the default.
+
+The `data_file` is where the change stream data is written to. the file is renamed to have the current datetime when the file is created, then the extension. A new file is created if a file does not existwith the same name, or the file becomes larger than the value of `max_file_size` (default is 1MB). 
 
 ### Setup
 

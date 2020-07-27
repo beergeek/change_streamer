@@ -13,6 +13,7 @@ try:
  import time
  from pymongo.errors import DuplicateKeyError, OperationFailure
  from bson.json_util import dumps
+ from datetime import date
 except ImportError as e:
  print(e)
  exit(1)
@@ -60,6 +61,7 @@ def get_config(args):
    config_options['DATA_DB_SSL_CA'] = config.get('DATA_DB', 'ssl_ca_cert_path')
    config_options['DATA_DB_TIMEOUT'] = config.getint('DATA_DB','timeout', fallback=10)
    config_options['FULL_DOCUMENT'] = config.get('DATA_DB','full_document',fallback='default')
+   config_options['MAX_FILE_SIZE'] = config.getint('DATA_DB', 'max_file_size', fallback=1048576)
    temp_pipeline = config.get('DATA_DB','event_pipeline',fallback=None)
    if temp_pipeline is not None:
      config_options['PIPELINE'] = ast.literal_eval(temp_pipeline)
@@ -79,6 +81,7 @@ ssl_ca_cert_path=/data/pki/ca.cert
 event_pipeline=[{'$match': {'fullDocument.un': {$in: ['ivan','vigyan','terry','loudSam']}}] # aggregation pipeline if required
 data_file=/opt/data.json # file to write change streams events to
 full_document=None # choice of default or updateLookup
+max_file_size=1048576 # defaults to this size
 
 [GENERAL]
 debug=false
@@ -159,8 +162,17 @@ def main():
  else:
    cursor = deployment.watch(pipeline=config_data['PIPELINE'],full_document=config_data['FULL_DOCUMENT'])
  try:
-   datafile = open(config_data['DATA_FILE'],'a')
+   # datafile = open(config_data['DATA_FILE'],'a')
+   datafile = None
+   current_file = None
    while True:
+     if datafile is None:
+       current_file = config_data['DATA_FILE'] + date.today().strftime("%Y-%m-%d-%H:%M")
+       datafile = open(current_file,'a')
+     if os.path.getsize(current_file) > config_data['MAX_FILE_SIZE']:
+       datafile.close()
+       current_file = config_data['DATA_FILE'] + date.today().strftime("%Y-%m-%d-%H:%M")
+       datafile = open(current_file,'a')
      document = next(cursor)
      resume_token = document.get("_id")['_data']
      if debug:

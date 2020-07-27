@@ -59,8 +59,8 @@ def get_config(args):
    config_options['DATA_DB_SSL_PEM'] = config.get('DATA_DB','ssl_pem_path',fallback=None)
    config_options['DATA_DB_SSL_CA'] = config.get('DATA_DB', 'ssl_ca_cert_path')
    config_options['DATA_DB_TIMEOUT'] = config.getint('DATA_DB','timeout', fallback=10)
-   config_options['FULL_DOCUMENT'] = config.get('DATA_DB','full_document',fallback=None)
-   temp_pipeline = config.get('DATA_DB','event_pipeline',fallback='default')
+   config_options['FULL_DOCUMENT'] = config.get('DATA_DB','full_document',fallback='default')
+   temp_pipeline = config.get('DATA_DB','event_pipeline',fallback=None)
    if temp_pipeline is not None:
      config_options['PIPELINE'] = ast.literal_eval(temp_pipeline)
    else:

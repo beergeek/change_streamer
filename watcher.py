@@ -164,12 +164,12 @@ def main():
    # datafile = open(config_data['DATA_FILE'],'a')
    datafile = None
    split_name = os.path.splitext(config_data['DATA_FILE'])
-   current_file = split_name[0] + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M") + split_name[1]
+   current_file = split_name[0] + datetime.datetime.now().strftime("-%Y-%m-%d-%H-%M") + split_name[1]
    datafile = open(current_file,'a')
    while True:
      if os.path.getsize(current_file) > config_data['MAX_FILE_SIZE']:
        datafile.close()
-       current_file = split_name[0] + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M") + split_name[1]
+       current_file = split_name[0] + datetime.datetime.now().strftime("-%Y-%m-%d-%H-%M") + split_name[1]
        datafile = open(current_file,'a')
      document = next(cursor)
      resume_token = document.get("_id")['_data']
